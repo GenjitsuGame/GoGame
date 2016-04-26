@@ -1,5 +1,6 @@
 # GoGame
-jeu de Go en mode console et éventuellement être compatible avec GoGui.
+Jeu de Go en mode console  
+Compatible avec GoGui.
 
 
 ## Liste des commandes
