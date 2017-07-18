@@ -4,7 +4,7 @@
 
 using namespace std;
 
-#include "goban.h"
+#include "Goban.h"
 
 
 Goban::Goban() {

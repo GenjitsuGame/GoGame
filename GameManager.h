@@ -6,7 +6,7 @@
 #include <fstream>
 #include <string>
 #include <sstream>
-#include "go.h"
+#include "Go.h"
 
 using namespace std;
 

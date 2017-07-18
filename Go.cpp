@@ -1,6 +1,6 @@
 #include<iostream>
 
-#include "go.h"
+#include "Go.h"
 
 using namespace std;
 

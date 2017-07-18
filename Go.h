@@ -5,7 +5,7 @@
 #include <iostream>
 
 #include "Player.h"
-#include "goban.h"
+#include "Goban.h"
 #include "Coordinates.h"
 
 using namespace std;
