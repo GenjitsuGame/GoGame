@@ -14,23 +14,23 @@ Go::~Go() {
 }
 
 void Go::createGoban(unsigned int size) {
-    jeu.createGoban(size);
+    game.createGoban(size);
 }
 
-enumIntersection Go::getPion(unsigned int x, unsigned int y) const {
-    return jeu.getPion(x, y);
+enumIntersection Go::getStone(unsigned int x, unsigned int y) const {
+    return game.getStone(x, y);
 }
 
-unsigned int Go::getTaille() const {
-    return jeu.getTaille();
+unsigned int Go::getSize() const {
+    return game.getSize();
 }
 
-unsigned int Go::getScore(char couleur) const {
-    return (couleur == 'N' ? noir.getScore() : blanc.getScore());
+unsigned int Go::getScore(char color) const {
+    return (color == 'N' ? black.getScore() : white.getScore());
 }
 
-bool Go::isWinner(char couleur) const {
-    return (getScore(couleur) >= getWinScore());
+bool Go::isWinner(char color) const {
+    return (getScore(color) >= getWinScore());
 }
 
 unsigned int Go::getWinScore() const {
@@ -49,13 +49,13 @@ bool Go::setKomi(unsigned int komi) {
     if (komi >= getWinScore() || komi < 1)
         return false;
     else
-        blanc.addScore(komi);
+        white.addScore(komi);
     return true;
 }
 
-Coord Go::conv(const string &coord) const {
+Coordinates Go::conv(const string &coord) const {
     if (coord[0] == 'I') {
-        Coord badcoord(getTaille() + 1, getTaille() + 1);
+        Coordinates badcoord(getSize() + 1, getSize() + 1);
         return badcoord;
     }
     unsigned int x = (int) coord[0] - 65;
@@ -64,40 +64,40 @@ Coord Go::conv(const string &coord) const {
     unsigned int y = (int) coord[1] - 49;
     if (coord.size() > 2)
         y = (y + 1) * 10 + (int) coord[2] - 49;
-    Coord newcoord(x, y);
+    Coordinates newcoord(x, y);
     return newcoord;
 }
 
-bool Go::estDansGoban(const string &coord) const {
-    Coord tmp = conv(coord);
-    return (tmp.getX() < getTaille() && tmp.getY() < getTaille());
+bool Go::isInGoban(const string &coord) const {
+    Coordinates tmp = conv(coord);
+    return (tmp.getX() < getSize() && tmp.getY() < getSize());
 }
 
 enumIntersection Go::getPion(const string &coord) const {
-    Coord tmp = conv(coord);
-    return getPion(tmp.getX(), tmp.getY());
+    Coordinates tmp = conv(coord);
+    return getStone(tmp.getX(), tmp.getY());
 }
 
 bool Go::connexeVide(unsigned int x, unsigned y) {
-    // ON SORT SI C'EST VIDE
-    if (x >= 1 && jeu.getPion(x - 1, y) == VIDE)
+    // ON SORT SI C'EST EMPTY
+    if (x >= 1 && game.getStone(x - 1, y) == EMPTY)
         return true;
-    if (y >= 1 && jeu.getPion(x, y - 1) == VIDE)
+    if (y >= 1 && game.getStone(x, y - 1) == EMPTY)
         return true;
-    if (x + 1 < jeu.getTaille() && jeu.getPion(x + 1, y) == VIDE)
+    if (x + 1 < game.getSize() && game.getStone(x + 1, y) == EMPTY)
         return true;
-    if (x + 1 < jeu.getTaille() && jeu.getPion(x, y + 1) == VIDE)
+    if (x + 1 < game.getSize() && game.getStone(x, y + 1) == EMPTY)
         return true;
     return false;
 
 }
 
-unsigned int Go::entoure(unsigned int x, unsigned int y, const enumIntersection &couleur) {
-    vector<Coord> dejaTeste;
-    vector<Coord> aTeste;
+unsigned int Go::surround(unsigned int x, unsigned int y, const enumIntersection &color) {
+    vector<Coordinates> dejaTeste;
+    vector<Coordinates> aTeste;
 
 
-    Coord courant(x, y);
+    Coordinates courant(x, y);
 
 
     do {
@@ -109,27 +109,27 @@ unsigned int Go::entoure(unsigned int x, unsigned int y, const enumIntersection 
 
         // ON RENTRE LES PIONS CONNEXES DANS A TESTE
 
-        // Il faut qu'il ne soit pas deja test�, ni dans la tab de Atest� et il faut qu'il soit de bonne couleur
-        if (courant.getX() >= 1 && jeu.getPion(courant.getX() - 1, courant.getY()) == couleur &&
-            !Coord(courant.getX() - 1, courant.getY()).presentDsTab(aTeste)
-            && !Coord(courant.getX() - 1, courant.getY()).presentDsTab(dejaTeste)) {
-            aTeste.push_back(Coord(courant.getX() - 1, courant.getY()));
+        // Il faut qu'il ne soit pas deja test�, ni dans la tab de Atest� et il faut qu'il soit de bonne color
+        if (courant.getX() >= 1 && game.getStone(courant.getX() - 1, courant.getY()) == color &&
+            !Coordinates(courant.getX() - 1, courant.getY()).isInTab(aTeste)
+            && !Coordinates(courant.getX() - 1, courant.getY()).isInTab(dejaTeste)) {
+            aTeste.push_back(Coordinates(courant.getX() - 1, courant.getY()));
         }
 
-        if (courant.getY() >= 1 && jeu.getPion(courant.getX(), courant.getY() - 1) == couleur &&
-            !Coord(Coord(courant.getX(), courant.getY() - 1)).presentDsTab(aTeste)
-            && !Coord(Coord(courant.getX(), courant.getY() - 1)).presentDsTab(dejaTeste)) {
-            aTeste.push_back(Coord(courant.getX(), courant.getY() - 1));
+        if (courant.getY() >= 1 && game.getStone(courant.getX(), courant.getY() - 1) == color &&
+            !Coordinates(Coordinates(courant.getX(), courant.getY() - 1)).isInTab(aTeste)
+            && !Coordinates(Coordinates(courant.getX(), courant.getY() - 1)).isInTab(dejaTeste)) {
+            aTeste.push_back(Coordinates(courant.getX(), courant.getY() - 1));
         }
-        if (courant.getX() + 1 < jeu.getTaille() && jeu.getPion(courant.getX() + 1, courant.getY()) == couleur &&
-            !Coord(courant.getX() + 1, courant.getY()).presentDsTab(aTeste)
-            && !Coord(courant.getX() + 1, courant.getY()).presentDsTab(dejaTeste)) {
-            aTeste.push_back(Coord(courant.getX() + 1, courant.getY()));
+        if (courant.getX() + 1 < game.getSize() && game.getStone(courant.getX() + 1, courant.getY()) == color &&
+            !Coordinates(courant.getX() + 1, courant.getY()).isInTab(aTeste)
+            && !Coordinates(courant.getX() + 1, courant.getY()).isInTab(dejaTeste)) {
+            aTeste.push_back(Coordinates(courant.getX() + 1, courant.getY()));
         }
-        if (courant.getY() + 1 < jeu.getTaille() && jeu.getPion(courant.getX(), courant.getY() + 1) == couleur &&
-            !Coord(courant.getX(), courant.getY() + 1).presentDsTab(aTeste)
-            && !Coord(courant.getX(), courant.getY() + 1).presentDsTab(dejaTeste)) {
-            aTeste.push_back(Coord(courant.getX(), courant.getY() + 1));
+        if (courant.getY() + 1 < game.getSize() && game.getStone(courant.getX(), courant.getY() + 1) == color &&
+            !Coordinates(courant.getX(), courant.getY() + 1).isInTab(aTeste)
+            && !Coordinates(courant.getX(), courant.getY() + 1).isInTab(dejaTeste)) {
+            aTeste.push_back(Coordinates(courant.getX(), courant.getY() + 1));
         }
 
 
@@ -140,72 +140,72 @@ unsigned int Go::entoure(unsigned int x, unsigned int y, const enumIntersection 
 
 
         // On rentre la coord courante dans DEJA TEST�
-        dejaTeste.push_back(Coord(courant.getX(), courant.getY()));
+        dejaTeste.push_back(Coordinates(courant.getX(), courant.getY()));
     } while (!aTeste.empty());
 
 
 
     // On supprrime les pions et on retourne le nombre de pions supprim�s
     unsigned int nbPionSup = dejaTeste.size();
-    for (vector<Coord>::const_iterator it = dejaTeste.begin(); it != dejaTeste.end(); ++it)
-        jeu.editPion(it->getX(), it->getY(), VIDE);
+    for (vector<Coordinates>::const_iterator it = dejaTeste.begin(); it != dejaTeste.end(); ++it)
+        game.editStone(it->getX(), it->getY(), EMPTY);
     return nbPionSup;
 }
 
-unsigned int Go::checkChaine(unsigned int x, unsigned y, char tour) {
-    Intersection couleur(tour);
+unsigned int Go::checkChain(unsigned int x, unsigned y, char turn) {
+    Intersection couleur(turn);
     unsigned int nbPionsSup = 0;
 
-    if (x >= 1 && jeu.getPion(x - 1, y) == couleur.getPion()) {
-        nbPionsSup += entoure(x - 1, y, couleur.getPion());
+    if (x >= 1 && game.getStone(x - 1, y) == couleur.getStone()) {
+        nbPionsSup += surround(x - 1, y, couleur.getStone());
     }
-    if (y >= 1 && jeu.getPion(x, y - 1) == couleur.getPion()) {
-        nbPionsSup += entoure(x, y - 1, couleur.getPion());
+    if (y >= 1 && game.getStone(x, y - 1) == couleur.getStone()) {
+        nbPionsSup += surround(x, y - 1, couleur.getStone());
     }
 
-    if (x + 1 < jeu.getTaille() && jeu.getPion(x + 1, y) == couleur.getPion()) {
-        nbPionsSup += entoure(x + 1, y, couleur.getPion());
+    if (x + 1 < game.getSize() && game.getStone(x + 1, y) == couleur.getStone()) {
+        nbPionsSup += surround(x + 1, y, couleur.getStone());
     }
-    if (y + 1 < jeu.getTaille() && jeu.getPion(x, y + 1) == couleur.getPion()) {
-        nbPionsSup += entoure(x, y + 1, couleur.getPion());
+    if (y + 1 < game.getSize() && game.getStone(x, y + 1) == couleur.getStone()) {
+        nbPionsSup += surround(x, y + 1, couleur.getStone());
     }
     return nbPionsSup;
 }
 
-bool Go::placerPion(char couleur, const string &pos) {
-    Coord tmp = conv(pos);
+bool Go::putStone(char couleur, const string &pos) {
+    Coordinates tmp = conv(pos);
 
-    if (tmp.getX() >= jeu.getTaille() || (tmp.getY() >= jeu.getTaille())
-        || getPion(tmp.getX(), tmp.getY()) != VIDE
-        || entoure(tmp.getX(), tmp.getY(), (enumIntersection) couleur) > 0)
+    if (tmp.getX() >= game.getSize() || (tmp.getY() >= game.getSize())
+        || getStone(tmp.getX(), tmp.getY()) != EMPTY
+        || surround(tmp.getX(), tmp.getY(), (enumIntersection) couleur) > 0)
         return false;
 
-    jeu.editPion(tmp.getX(), tmp.getY(), couleur);
-    unsigned int nbPoints = checkChaine(tmp.getX(), tmp.getY(), couleur);
+    game.editStone(tmp.getX(), tmp.getY(), couleur);
+    unsigned int nbPoints = checkChain(tmp.getX(), tmp.getY(), couleur);
 
     if (couleur == 'N')
-        noir.addScore(nbPoints);
+        black.addScore(nbPoints);
     else
-        blanc.addScore(nbPoints);
+        white.addScore(nbPoints);
     return true;
 }
 
-unsigned int Go::getNbCoups() const {
-    return listeCoup.size();
+unsigned int Go::getMoveNbr() const {
+    return movesList.size();
 }
 
-void Go::addCoup(const string &joueur, const string &coup) {
+void Go::addMove(const string &joueur, const string &move) {
     string tmp(joueur);
     tmp.append(" ");
-    tmp.append(coup);
-    listeCoup.push_back(tmp);
+    tmp.append(move);
+    movesList.push_back(tmp);
 }
 
-void Go::newListeCoup() {
-    if (!listeCoup.empty())
-        listeCoup.clear();
+void Go::newMoveList() {
+    if (!movesList.empty())
+        movesList.clear();
 }
 
-string Go::getCoup(unsigned int i) const {
-    return listeCoup[i];
+string Go::getMove(unsigned int i) const {
+    return movesList[i];
 }

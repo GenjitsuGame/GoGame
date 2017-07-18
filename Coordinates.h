@@ -3,11 +3,11 @@
 
 #include <vector>
 
-class Coord {
+class Coordinates {
 
 public:
 
-    Coord(unsigned int const x1, unsigned int const y1);
+    Coordinates(unsigned int const x1, unsigned int const y1);
 
     void editCoord(unsigned int x1, unsigned int y1);
 
@@ -16,11 +16,11 @@ public:
 
     unsigned int getY() const;
 
-    void operator=(const Coord &c);
+    void operator=(const Coordinates &c);
 
-    bool presentDsTab(const std::vector<Coord> &aTeste) const;
+    bool isInTab(const std::vector<Coordinates> &aTeste) const;
 
-    bool operator==(const Coord &a) const;
+    bool operator==(const Coordinates &a) const;
 
 private:
 

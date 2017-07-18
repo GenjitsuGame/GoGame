@@ -4,9 +4,9 @@
 
 #include <iostream>
 
-#include "joueur.h"
+#include "Player.h"
 #include "goban.h"
-#include "coord.h"
+#include "Coordinates.h"
 
 using namespace std;
 
@@ -20,14 +20,14 @@ public:
 
     void createGoban(unsigned int size);
 
-    enumIntersection getPion(unsigned int x, unsigned int y) const;
+    enumIntersection getStone(unsigned int x, unsigned int y) const;
 
-    unsigned int getTaille() const;
+    unsigned int getSize() const;
 
-    unsigned int getScore(char couleur) const;
+    unsigned int getScore(char color) const;
 
 
-    bool isWinner(char couleur) const;
+    bool isWinner(char color) const;
 
 
     unsigned int getWinScore() const;
@@ -36,35 +36,35 @@ public:
 
     bool setKomi(unsigned int komi);
 
-    Coord conv(const string &coord) const;
+    Coordinates conv(const string &coord) const;
 
-    bool estDansGoban(const string &coord) const;
+    bool isInGoban(const string &coord) const;
 
     enumIntersection getPion(const string &coord) const;
 
     bool connexeVide(unsigned int x, unsigned y);
 
-    unsigned int entoure(unsigned int x, unsigned int y, const enumIntersection &couleur);
+    unsigned int surround(unsigned int x, unsigned int y, const enumIntersection &color);
 
-    unsigned int checkChaine(unsigned int x, unsigned y, char tour);
+    unsigned int checkChain(unsigned int x, unsigned y, char turn);
 
-    bool placerPion(char couleur, const string &pos);
+    bool putStone(char couleur, const string &pos);
 
-    unsigned int getNbCoups() const;
+    unsigned int getMoveNbr() const;
 
-    void addCoup(const string &joueur, const string &coup);
+    void addMove(const string &joueur, const string &move);
 
-    void newListeCoup();
+    void newMoveList();
 
-    string getCoup(unsigned int i) const;
+    string getMove(unsigned int i) const;
 
 private:
 
-    Goban jeu;
-    Joueur noir;
-    Joueur blanc;
+    Goban game;
+    Player black;
+    Player white;
     unsigned int winScore;
-    vector<string> listeCoup;
+    vector<string> movesList;
 };
 
 

@@ -1,10 +1,10 @@
 #include <iostream>
 #include <cstdlib>
-#include "gtp.h"
+#include "GameManager.h"
 
 using namespace std;
 
-GTP::GTP() {
+GameManager::GameManager() {
 
 }
 
@@ -12,7 +12,7 @@ void repondre(const char *reponse) {
     cout << reponse;
 }
 
-void GTP::commandes() {
+void GameManager::cmds() {
     string command;
     enum {
         taille = 100
@@ -38,31 +38,31 @@ void GTP::commandes() {
         string coord;
         iss >> coord;
         show(coord);
-    } else if (command == "showboard") {
-        showboard();
+    } else if (command == "showBoard") {
+        showBoard();
         repondre("=\n\n");
     } else if (command == "list_commands")
-        list_command();
+        listCmds();
     else if (command == "clear_board") {
-        gogame.createGoban(gogame.getTaille());
-        gogame.addCoup("clear", "");
+        gogame.createGoban(gogame.getSize());
+        gogame.addMove("clear", "");
         repondre("= Goban reinitialise !\n\n");
-        gogame.newListeCoup();
+        gogame.newMoveList();
     } else if (command == "liste_coup") {
-        if (gogame.getNbCoups() == 0)
+        if (gogame.getMoveNbr() == 0)
             repondre("Il n'y a pas de coups jou�s\n\n");
         else {
-            for (unsigned int i = 0; i < gogame.getNbCoups(); ++i)
-                cout << gogame.getCoup(i) << endl;
+            for (unsigned int i = 0; i < gogame.getMoveNbr(); ++i)
+                cout << gogame.getMove(i) << endl;
         }
-    } else if (command == "boardsize") {
+    } else if (command == "boardSize") {
         int size = 0;
         iss >> size;
         if (!iss)
             repondre("? invalid argument\n\n");
         else {
             repondre("=\n\n");
-            boardsize(size);
+            boardSize(size);
         }
     } else if (command == "komi") {
         int komi = 0;
@@ -103,19 +103,19 @@ void GTP::commandes() {
                 else if (joueur == "B" && !tourBlanc)
                     repondre("C'est au tour des Noirs de jouer\n");
                 else {
-                    if (gogame.placerPion(joueur[0], coup) == false)
+                    if (gogame.putStone(joueur[0], coup) == false)
                         repondre("Coordonn�es invalides\n");
                     else {
-                        gogame.placerPion(joueur[0], coup);
-                        gogame.addCoup(joueur, coup);
+                        gogame.putStone(joueur[0], coup);
+                        gogame.addMove(joueur, coup);
 
                         if (tourBlanc) tourBlanc = false;
                         else tourBlanc = true;
 
-                        showboard();
+                        showBoard();
 
                         if (gogame.isWinner(joueur[0]))
-                            showwin(joueur[0]);
+                            showWinners(joueur[0]);
                     }
                     repondre("=\n\n");
                 }
@@ -125,61 +125,61 @@ void GTP::commandes() {
         repondre("? unknown command\n\n");
 }
 
-void GTP::show(const string &coord) const {
-    if (!gogame.estDansGoban(coord))
+void GameManager::show(const string &coord) const {
+    if (!gogame.isInGoban(coord))
         repondre("\n= coordonnees invalides\n\n");
     else {
-        if (gogame.getPion(coord) == BLANC)
+        if (gogame.getPion(coord) == WHITE)
             repondre("\n= Blanc\n\n");
-        else if (gogame.getPion(coord) == NOIR)
+        else if (gogame.getPion(coord) == BLACK)
             repondre("\n= Noir\n\n");
         else
             repondre("\n= Vide\n\n");
     }
 }
 
-void GTP::list_command() const {
+void GameManager::listCmds() const {
     repondre(
-            "= Liste des commandes :\n\nname\nprotocol_version\nversion\nlist_commands\nclear_board\nshow\nshowboard\nboardsize\nkomi\nset_winscore\nplay\nliste_coup\n\n");
+            "= Liste des cmds :\n\nname\nprotocol_version\nversion\nlist_commands\nclear_board\nshow\nshowBoard\nboardSize\nkomi\nset_winscore\nplay\nliste_coup\n\n");
 }
 
-void GTP::showwin(char joueur) {
+void GameManager::showWinners(char joueur) {
     repondre("\n\n");
-    showboard();
+    showBoard();
     repondre("Victoire du joueur ");
-    repondre(joueur == 'B' ? "BLANC" : "NOIR");
+    repondre(joueur == 'B' ? "WHITE" : "BLACK");
     repondre("\n\n");
     system("pause");
     system("cls");
-    gogame.createGoban(gogame.getTaille());
-    gogame.newListeCoup();
+    gogame.createGoban(gogame.getSize());
+    gogame.newMoveList();
 }
 
-void GTP::boardsize(unsigned int size) {
+void GameManager::boardSize(unsigned int size) {
     if (size > 0 && size > 19) {
-        cout << "Veuillez rentrez une taille compris entre 1 et 19" << endl;
+        cout << "Veuillez rentrez une size compris entre 1 et 19" << endl;
         return;
     }
 
     gogame.createGoban(size);
 }
 
-void GTP::showboard() const {
+void GameManager::showBoard() const {
     vector<char> col;
-    for (unsigned int i = 0; i <= gogame.getTaille(); i++) {
+    for (unsigned int i = 0; i <= gogame.getSize(); i++) {
         if ((char) (65 + i) != 'I')
             col.push_back((char) (65 + i));
     }
-    col.resize(gogame.getTaille());
+    col.resize(gogame.getSize());
 
     repondre("\n\n");
-    for (unsigned int y = 0; y < gogame.getTaille(); y++) {
+    for (unsigned int y = 0; y < gogame.getSize(); y++) {
         stringstream ss;
         ss << (y + 1);
         string tmp = ss.str();
         if (y != 0)
             cout << (tmp.size() == 1 ? " " : "") << tmp;
-        for (unsigned int x = 0; x < gogame.getTaille(); x++) {
+        for (unsigned int x = 0; x < gogame.getSize(); x++) {
             cout << " ";
             if (y == 0 && x == 0) {
                 cout << "  ";
@@ -188,9 +188,9 @@ void GTP::showboard() const {
                 cout << endl << " 1 ";
             }
 
-            if (gogame.getPion(x, y) == BLANC)
+            if (gogame.getStone(x, y) == WHITE)
                 cout << 'O';
-            else if (gogame.getPion(x, y) == NOIR)
+            else if (gogame.getStone(x, y) == BLACK)
                 cout << 'X';
             else
                 cout << '.';
@@ -198,7 +198,7 @@ void GTP::showboard() const {
         cout << endl;
     }
 
-    cout << "O : Joueur Blanc a : " << gogame.getScore('B') << " points." << endl;
-    cout << "X : Joueur Noir  a : " << gogame.getScore('N') << " points." << endl;
+    cout << "O : Player Blanc a : " << gogame.getScore('B') << " points." << endl;
+    cout << "X : Player Noir  a : " << gogame.getScore('N') << " points." << endl;
     cout << "\n\n";
 }

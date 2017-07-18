@@ -1,10 +1,10 @@
 #include <iostream>
 
-#include "gtp.h"
+#include "GameManager.h"
 
 int main() {
-    GTP gtp;
-    gtp.list_command();
+    GameManager gtp;
+    gtp.listCmds();
     while (1)
-        gtp.commandes();
+        gtp.cmds();
 }

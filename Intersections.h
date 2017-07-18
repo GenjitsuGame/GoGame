@@ -3,9 +3,9 @@
 
 
 enum enumIntersection {
-    VIDE,
-    BLANC = 'B',
-    NOIR = 'N'
+    EMPTY,
+    WHITE = 'W',
+    BLACK = 'B'
 };
 
 class Intersection {
@@ -14,9 +14,9 @@ public:
 
     Intersection(char tour);
 
-    enumIntersection getPion() const;
+    enumIntersection getStone() const;
 
-    void edit(const enumIntersection &valeur);
+    void edit(const enumIntersection &value);
 
 private:
 

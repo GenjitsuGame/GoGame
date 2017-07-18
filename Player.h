@@ -1,10 +1,10 @@
 #ifndef JOUEUR_H_
 #define JOUEUR_H_
 
-class Joueur {
+class Player {
 public:
 
-    Joueur();
+    Player();
 
     unsigned int getScore() const;
 

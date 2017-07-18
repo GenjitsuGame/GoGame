@@ -16,32 +16,32 @@ Goban::~Goban() {
 
 }
 
-unsigned int Goban::getTaille() const {
-    return taille;
+unsigned int Goban::getSize() const {
+    return size;
 }
 
 unsigned int Goban::access(unsigned int x, unsigned int y) const {
-    return getTaille() * y + x;
+    return getSize() * y + x;
 }
 
 void Goban::createGoban(unsigned int cote) {
     assert(cote < 20 && cote > 0);
-    if (!plateau.empty())
-        plateau.clear();
-    plateau.resize(cote * cote);
-    taille = cote;
+    if (!board.empty())
+        board.clear();
+    board.resize(cote * cote);
+    size = cote;
 }
 
 
-enumIntersection Goban::getPion(unsigned int x, unsigned int y) const {
-    assert(x < getTaille() && y < getTaille());
+enumIntersection Goban::getStone(unsigned int x, unsigned int y) const {
+    assert(x < getSize() && y < getSize());
     /*retourne la valeur de l'intersection � la position (x,y)*/
-    return (plateau.at(access(x, y))).getPion();
+    return (board.at(access(x, y))).getStone();
 
 }
 
-void Goban::editPion(unsigned int x, unsigned int y, char valeur) {
-    assert(x < getTaille() && y < getTaille());
-    /*�dite la valeur de l'intersection � la position (x,y)*/
-    (plateau.at(access(x, y))).edit((enumIntersection) valeur);
+void Goban::editStone(unsigned int x, unsigned int y, char value) {
+    assert(x < getSize() && y < getSize());
+    /*�dite la value de l'intersection � la position (x,y)*/
+    (board.at(access(x, y))).edit((enumIntersection) value);
 }

@@ -10,21 +10,21 @@
 
 using namespace std;
 
-class GTP {
+class GameManager {
 public:
-    GTP();
+    GameManager();
 
-    void commandes();
+    void cmds();
 
     void show(const string &coord) const;
 
-    void list_command() const;
+    void listCmds() const;
 
-    void showwin(char joueur);
+    void showWinners(char joueur);
 
-    void boardsize(unsigned int size);
+    void boardSize(unsigned int size);
 
-    void showboard() const;
+    void showBoard() const;
 
 private:
 

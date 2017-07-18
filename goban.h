@@ -2,7 +2,7 @@
 #define GOBAN_H_
 
 #include<vector>
-#include "intersection.h"
+#include "Intersections.h"
 
 
 using namespace std;
@@ -14,20 +14,20 @@ public:
 
     ~Goban();
 
-    unsigned int getTaille() const;
+    unsigned int getSize() const;
 
     unsigned int access(unsigned int x, unsigned int y) const;
 
     void createGoban(unsigned int cote);
 
-    enumIntersection getPion(unsigned int x, unsigned int y) const;
+    enumIntersection getStone(unsigned int x, unsigned int y) const;
 
-    void editPion(unsigned int x, unsigned int y, char valeur);
+    void editStone(unsigned int x, unsigned int y, char value);
 
 private:
 
-    vector<Intersection> plateau;
-    unsigned int taille;
+    vector<Intersection> board;
+    unsigned int size;
 
 };
 
