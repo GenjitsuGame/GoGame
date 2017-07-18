@@ -13,7 +13,7 @@ public:
 
 private:
 
-    unsigned int score; /**< Le score du joueur */
+    unsigned int score;
 };
 
 #endif /* JOUEUR_H_ */

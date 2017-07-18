@@ -20,7 +20,7 @@ public:
 
 private:
 
-    enumIntersection intersection; /** <Membre privé de la classe intersection stockant la valeur de ce qu'elle contient. */
+    enumIntersection intersection;
 };
 
 

@@ -24,8 +24,8 @@ public:
 
 private:
 
-    unsigned int x; /**< Coordonn�e X */
-    unsigned int y; /**< Coordonn�e Y */
+    unsigned int x;
+    unsigned int y;
 };
 
 #endif /* COORD_H_ */
