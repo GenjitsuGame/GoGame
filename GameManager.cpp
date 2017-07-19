@@ -18,6 +18,7 @@ void reply(const char *reponse) {
 
 void GameManager::cmds() {
     string command;
+    static bool whiteTurn = false;
     enum {
         taille = 100
     };
@@ -44,6 +45,7 @@ void GameManager::cmds() {
     else if (command == "clear_board") {
         gogame.createGoban(gogame.getSize());
         gogame.addMove("clear", "");
+        whiteTurn = false;
         reply("= Goban reinitialise !\n\n");
         gogame.newMoveList();
     } else if (command == "liste_coup") {
@@ -52,6 +54,16 @@ void GameManager::cmds() {
         else {
             for (unsigned int i = 0; i < gogame.getMoveNbr(); ++i)
                 cout << gogame.getMove(i) << endl;
+        }
+    } else if (command == "forfeit") {
+        string player;
+        iss >> player;
+        if (!iss)
+            reply("? invalid argument\n\n");
+        else {
+            if (player != "B" && player != "W")
+                reply("La couleur est incorrecte, veuillez rentrez W pour Blanc et B pour Noir\n");
+            player == "B" ? showWinners('W') : showWinners('B');
         }
     } else if (command == "boardSize") {
         int size = 0;
@@ -75,7 +87,7 @@ void GameManager::cmds() {
         }
 
     } else if (command == "set_winscore") {
-        unsigned int scoretowin = 1;
+        unsigned int scoretowin = 20;
         iss >> scoretowin;
         if (!iss)
             reply("? invalid argument\n\n");
@@ -92,7 +104,6 @@ void GameManager::cmds() {
         if (!iss)
             reply("? invalid argument\n\n");
         else {
-            static bool whiteTurn = false;
             if (player != "B" && player != "W")
                 reply("La couleur est incorrecte, veuillez rentrez W pour Blanc et B pour Noir\n");
             else {
@@ -138,7 +149,7 @@ void GameManager::show(const string &coord) const {
 
 void GameManager::listCommands() const {
     reply(
-            "= Liste des cmds :\n\nname\nprotocol_version\nversion\nlist_commands\nclear_board\nshow\nshowBoard\nboardSize\nkomi\nset_winscore\nplay\nliste_coup\n\n");
+            "Liste des commandes :\n\nlist_commands\nclear_board\nshow\nshowBoard\nboardSize\nkomi\nset_winscore\nplay\nforfeit\nliste_coup\n\n");
 }
 
 void GameManager::showWinners(char joueur) {
@@ -147,8 +158,6 @@ void GameManager::showWinners(char joueur) {
     reply("Victoire du joueur ");
     reply(joueur == 'W' ? "WHITE" : "BLACK");
     reply("\n\n");
-    system("PAUSE");
-    system("CLS");
     gogame.createGoban(gogame.getSize());
     gogame.newMoveList();
 }
@@ -197,6 +206,6 @@ void GameManager::showBoard() const {
     }
 
     cout << "O : White Player a : " << gogame.getScore('B') << " points." << endl;
-    cout << "X : Black Player  a : " << gogame.getScore('N') << " points." << endl;
+    cout << "X : Black Player a : " << gogame.getScore('N') << " points." << endl;
     cout << "\n\n";
 }
