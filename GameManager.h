@@ -20,7 +20,7 @@ public:
 
     void listCommands() const;
 
-    void showWinners(char joueur);
+    void showWinner(char player);
 
     void boardSize(unsigned int size);
 
