@@ -40,7 +40,7 @@ public:
 
     bool isInGoban(const string &coord) const;
 
-    enumIntersection getPion(const string &coord) const;
+    enumIntersection getStone(const string &coord) const;
 
     bool connexeVide(unsigned int x, unsigned y);
 

@@ -76,7 +76,7 @@ bool Go::isInGoban(const string &coord) const {
     return (tmp.getX() < getSize() && tmp.getY() < getSize());
 }
 
-enumIntersection Go::getPion(const string &coord) const {
+enumIntersection Go::getStone(const string &coord) const {
     Coordinates tmp = conv(coord);
     return getStone(tmp.getX(), tmp.getY());
 }

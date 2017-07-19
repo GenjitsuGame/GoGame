@@ -12,8 +12,8 @@ GameManager::GameManager() {
 
 }
 
-void reply(const char *reponse) {
-    cout << reponse;
+void reply(const char *response) {
+    cout << response;
 }
 
 void GameManager::cmds() {
@@ -46,9 +46,9 @@ void GameManager::cmds() {
         gogame.addMove("clear", "");
         reply("= Goban reinitialise !\n\n");
         gogame.newMoveList();
-    } else if (command == "liste_coup") {
+    } else if (command == "moves_list") {
         if (gogame.getMoveNbr() == 0)
-            reply("Il n'y a pas de coups jou�s\n\n");
+            reply("Il n'y a pas de coups joues\n\n");
         else {
             for (unsigned int i = 0; i < gogame.getMoveNbr(); ++i)
                 cout << gogame.getMove(i) << endl;
@@ -83,7 +83,7 @@ void GameManager::cmds() {
             if (!gogame.setWinScore(scoretowin))
                 reply("? invalid argument\n\n");
             else
-                reply("\nLe score requis pour gagner � bien ete mis � jour !\n\n");
+                reply("\nLe score requis pour gagner a bien ete mis a jour !\n\n");
         }
     } else if (command == "play") {
         string player;
@@ -101,19 +101,18 @@ void GameManager::cmds() {
                 else if (player == "W" && !whiteTurn)
                     reply("C'est au tour des Noirs de jouer\n");
                 else {
-                    if (gogame.putStone(player[0], move) == false)
-                        reply("Coordonn�es invalides\n");
+                    if (!gogame.putStone(player[0], move))
+                        reply("Coordonnees invalides\n");
                     else {
                         gogame.putStone(player[0], move);
                         gogame.addMove(player, move);
 
-                        if (whiteTurn) whiteTurn = false;
-                        else whiteTurn = true;
+                        whiteTurn = !whiteTurn;
 
                         showBoard();
 
                         if (gogame.isWinner(player[0]))
-                            showWinners(player[0]);
+                            showWinner(player[0]);
                     }
                     reply("=\n\n");
                 }
@@ -127,9 +126,9 @@ void GameManager::show(const string &coord) const {
     if (!gogame.isInGoban(coord))
         reply("\n= coordonnees invalides\n\n");
     else {
-        if (gogame.getPion(coord) == WHITE)
+        if (gogame.getStone(coord) == WHITE)
             reply("\n= Blanc\n\n");
-        else if (gogame.getPion(coord) == BLACK)
+        else if (gogame.getStone(coord) == BLACK)
             reply("\n= Noir\n\n");
         else
             reply("\n= Vide\n\n");
@@ -141,11 +140,11 @@ void GameManager::listCommands() const {
             "= Liste des cmds :\n\nname\nprotocol_version\nversion\nlist_commands\nclear_board\nshow\nshowBoard\nboardSize\nkomi\nset_winscore\nplay\nliste_coup\n\n");
 }
 
-void GameManager::showWinners(char joueur) {
+void GameManager::showWinner(char player) {
     reply("\n\n");
     showBoard();
-    reply("Victoire du joueur ");
-    reply(joueur == 'W' ? "WHITE" : "BLACK");
+    reply("Victoire du player ");
+    reply(player == 'W' ? "WHITE" : "BLACK");
     reply("\n\n");
     system("PAUSE");
     system("CLS");
@@ -196,7 +195,7 @@ void GameManager::showBoard() const {
         cout << endl;
     }
 
-    cout << "O : White Player a : " << gogame.getScore('B') << " points." << endl;
-    cout << "X : Black Player  a : " << gogame.getScore('N') << " points." << endl;
+    cout << "O : White Player a : " << gogame.getScore('W') << " points." << endl;
+    cout << "X : Black Player  a : " << gogame.getScore('B') << " points." << endl;
     cout << "\n\n";
 }
