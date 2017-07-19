@@ -1,6 +1,10 @@
 #include <iostream>
 #include <cstdlib>
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
 #include "GameManager.h"
+
 
 using namespace std;
 
@@ -8,7 +12,7 @@ GameManager::GameManager() {
 
 }
 
-void repondre(const char *reponse) {
+void reply(const char *reponse) {
     cout << reponse;
 }
 
@@ -24,33 +28,27 @@ void GameManager::cmds() {
     iss >> command;
     if (!iss) {
         iss.clear();
-        repondre("? unknown command\n\n");
+        reply("? unknown command\n\n");
     }
     if (command == "quit")
         exit(0);
-    else if (command == "name")
-        repondre("= go\n\n");
-    else if (command == "protocol_version")
-        repondre("= 2\n\n");
-    else if (command == "version")
-        repondre("= 0.1\n\n");
     else if (command == "show") {
         string coord;
         iss >> coord;
         show(coord);
     } else if (command == "showBoard") {
         showBoard();
-        repondre("=\n\n");
+        reply("=\n\n");
     } else if (command == "list_commands")
-        listCmds();
+        listCommands();
     else if (command == "clear_board") {
         gogame.createGoban(gogame.getSize());
         gogame.addMove("clear", "");
-        repondre("= Goban reinitialise !\n\n");
+        reply("= Goban reinitialise !\n\n");
         gogame.newMoveList();
     } else if (command == "liste_coup") {
         if (gogame.getMoveNbr() == 0)
-            repondre("Il n'y a pas de coups jou�s\n\n");
+            reply("Il n'y a pas de coups jou�s\n\n");
         else {
             for (unsigned int i = 0; i < gogame.getMoveNbr(); ++i)
                 cout << gogame.getMove(i) << endl;
@@ -59,98 +57,98 @@ void GameManager::cmds() {
         int size = 0;
         iss >> size;
         if (!iss)
-            repondre("? invalid argument\n\n");
+            reply("? invalid argument\n\n");
         else {
-            repondre("=\n\n");
+            reply("=\n\n");
             boardSize(size);
         }
     } else if (command == "komi") {
         int komi = 0;
         iss >> komi;
         if (!iss)
-            repondre("? invalid argument\n\n");
+            reply("? invalid argument\n\n");
         else {
             if (gogame.setKomi(komi))
-                repondre("\nLe komi a ete mis a jour !\n\n");
+                reply("\nLe komi a ete mis a jour !\n\n");
             else
-                repondre("\nKomi invalide !\n\n");
+                reply("\nKomi invalide !\n\n");
         }
 
     } else if (command == "set_winscore") {
         unsigned int scoretowin = 1;
         iss >> scoretowin;
         if (!iss)
-            repondre("? invalid argument\n\n");
+            reply("? invalid argument\n\n");
         else {
             if (!gogame.setWinScore(scoretowin))
-                repondre("? invalid argument\n\n");
+                reply("? invalid argument\n\n");
             else
-                repondre("\nLe score requis pour gagner � bien ete mis � jour !\n\n");
+                reply("\nLe score requis pour gagner � bien ete mis � jour !\n\n");
         }
     } else if (command == "play") {
-        string joueur;
-        string coup;
-        iss >> joueur >> coup;
+        string player;
+        string move;
+        iss >> player >> move;
         if (!iss)
-            repondre("? invalid argument\n\n");
+            reply("? invalid argument\n\n");
         else {
-            static bool tourBlanc = false;
-            if (joueur != "N" && joueur != "B")
-                repondre("La couleur est incorrecte, veuillez rentrez B pour Blanc et N pour Noir\n");
+            static bool whiteTurn = false;
+            if (player != "B" && player != "W")
+                reply("La couleur est incorrecte, veuillez rentrez W pour Blanc et B pour Noir\n");
             else {
-                if (joueur == "N" && tourBlanc)
-                    repondre("C'est au tour des Blancs de jouer\n");
-                else if (joueur == "B" && !tourBlanc)
-                    repondre("C'est au tour des Noirs de jouer\n");
+                if (player == "B" && whiteTurn)
+                    reply("C'est au tour des Blancs de jouer\n");
+                else if (player == "W" && !whiteTurn)
+                    reply("C'est au tour des Noirs de jouer\n");
                 else {
-                    if (gogame.putStone(joueur[0], coup) == false)
-                        repondre("Coordonn�es invalides\n");
+                    if (gogame.putStone(player[0], move) == false)
+                        reply("Coordonn�es invalides\n");
                     else {
-                        gogame.putStone(joueur[0], coup);
-                        gogame.addMove(joueur, coup);
+                        gogame.putStone(player[0], move);
+                        gogame.addMove(player, move);
 
-                        if (tourBlanc) tourBlanc = false;
-                        else tourBlanc = true;
+                        if (whiteTurn) whiteTurn = false;
+                        else whiteTurn = true;
 
                         showBoard();
 
-                        if (gogame.isWinner(joueur[0]))
-                            showWinners(joueur[0]);
+                        if (gogame.isWinner(player[0]))
+                            showWinners(player[0]);
                     }
-                    repondre("=\n\n");
+                    reply("=\n\n");
                 }
             }
         }
     } else
-        repondre("? unknown command\n\n");
+        reply("? unknown command\n\n");
 }
 
 void GameManager::show(const string &coord) const {
     if (!gogame.isInGoban(coord))
-        repondre("\n= coordonnees invalides\n\n");
+        reply("\n= coordonnees invalides\n\n");
     else {
         if (gogame.getPion(coord) == WHITE)
-            repondre("\n= Blanc\n\n");
+            reply("\n= Blanc\n\n");
         else if (gogame.getPion(coord) == BLACK)
-            repondre("\n= Noir\n\n");
+            reply("\n= Noir\n\n");
         else
-            repondre("\n= Vide\n\n");
+            reply("\n= Vide\n\n");
     }
 }
 
-void GameManager::listCmds() const {
-    repondre(
+void GameManager::listCommands() const {
+    reply(
             "= Liste des cmds :\n\nname\nprotocol_version\nversion\nlist_commands\nclear_board\nshow\nshowBoard\nboardSize\nkomi\nset_winscore\nplay\nliste_coup\n\n");
 }
 
 void GameManager::showWinners(char joueur) {
-    repondre("\n\n");
+    reply("\n\n");
     showBoard();
-    repondre("Victoire du joueur ");
-    repondre(joueur == 'B' ? "WHITE" : "BLACK");
-    repondre("\n\n");
-    system("pause");
-    system("cls");
+    reply("Victoire du joueur ");
+    reply(joueur == 'W' ? "WHITE" : "BLACK");
+    reply("\n\n");
+    system("PAUSE");
+    system("CLS");
     gogame.createGoban(gogame.getSize());
     gogame.newMoveList();
 }
@@ -172,7 +170,7 @@ void GameManager::showBoard() const {
     }
     col.resize(gogame.getSize());
 
-    repondre("\n\n");
+    reply("\n\n");
     for (unsigned int y = 0; y < gogame.getSize(); y++) {
         stringstream ss;
         ss << (y + 1);
@@ -198,7 +196,7 @@ void GameManager::showBoard() const {
         cout << endl;
     }
 
-    cout << "O : Player Blanc a : " << gogame.getScore('B') << " points." << endl;
-    cout << "X : Player Noir  a : " << gogame.getScore('N') << " points." << endl;
+    cout << "O : White Player a : " << gogame.getScore('B') << " points." << endl;
+    cout << "X : Black Player  a : " << gogame.getScore('N') << " points." << endl;
     cout << "\n\n";
 }

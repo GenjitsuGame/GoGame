@@ -4,7 +4,7 @@
 
 int main() {
     GameManager gtp;
-    gtp.listCmds();
+    gtp.listCommands();
     while (1)
         gtp.cmds();
 }

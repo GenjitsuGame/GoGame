@@ -18,7 +18,7 @@ public:
 
     void show(const string &coord) const;
 
-    void listCmds() const;
+    void listCommands() const;
 
     void showWinners(char joueur);
 

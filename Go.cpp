@@ -1,8 +1,13 @@
 #include<iostream>
-
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
+// #include <boost/asio.hpp>
 #include "Go.h"
 
+// TODO : move server side...
 using namespace std;
+//using boost::asio::ip::tcp;
 
 Go::Go() {
     winScore = 1;
@@ -58,12 +63,10 @@ Coordinates Go::conv(const string &coord) const {
         Coordinates badcoord(getSize() + 1, getSize() + 1);
         return badcoord;
     }
-    unsigned int x = (int) coord[0] - 65;
+    unsigned int x = (unsigned int) coord[0] - 65;
     if (x > 8)
         --x;
-    unsigned int y = (int) coord[1] - 49;
-    if (coord.size() > 2)
-        y = (y + 1) * 10 + (int) coord[2] - 49;
+    unsigned int y = (unsigned int) stoi(coord.substr(1, 2)) - 1;
     Coordinates newcoord(x, y);
     return newcoord;
 }
@@ -79,7 +82,6 @@ enumIntersection Go::getPion(const string &coord) const {
 }
 
 bool Go::connexeVide(unsigned int x, unsigned y) {
-    // ON SORT SI C'EST EMPTY
     if (x >= 1 && game.getStone(x - 1, y) == EMPTY)
         return true;
     if (y >= 1 && game.getStone(x, y - 1) == EMPTY)
@@ -93,63 +95,53 @@ bool Go::connexeVide(unsigned int x, unsigned y) {
 }
 
 unsigned int Go::surround(unsigned int x, unsigned int y, const enumIntersection &color) {
-    vector<Coordinates> dejaTeste;
-    vector<Coordinates> aTeste;
+    vector<Coordinates> alreadyTested;
+    vector<Coordinates> toTest;
 
 
-    Coordinates courant(x, y);
+    Coordinates current(x, y);
 
 
     do {
-        // On change de coord courante
-        if (aTeste.size() != 0) {
-            courant = aTeste.back();
-            aTeste.pop_back();
+        if (toTest.size() != 0) {
+            current = toTest.back();
+            toTest.pop_back();
         }
 
-        // ON RENTRE LES PIONS CONNEXES DANS A TESTE
-
-        // Il faut qu'il ne soit pas deja test�, ni dans la tab de Atest� et il faut qu'il soit de bonne color
-        if (courant.getX() >= 1 && game.getStone(courant.getX() - 1, courant.getY()) == color &&
-            !Coordinates(courant.getX() - 1, courant.getY()).isInTab(aTeste)
-            && !Coordinates(courant.getX() - 1, courant.getY()).isInTab(dejaTeste)) {
-            aTeste.push_back(Coordinates(courant.getX() - 1, courant.getY()));
+        if (current.getX() >= 1 && game.getStone(current.getX() - 1, current.getY()) == color &&
+            !Coordinates(current.getX() - 1, current.getY()).isInTab(toTest)
+            && !Coordinates(current.getX() - 1, current.getY()).isInTab(alreadyTested)) {
+            toTest.push_back(Coordinates(current.getX() - 1, current.getY()));
         }
 
-        if (courant.getY() >= 1 && game.getStone(courant.getX(), courant.getY() - 1) == color &&
-            !Coordinates(Coordinates(courant.getX(), courant.getY() - 1)).isInTab(aTeste)
-            && !Coordinates(Coordinates(courant.getX(), courant.getY() - 1)).isInTab(dejaTeste)) {
-            aTeste.push_back(Coordinates(courant.getX(), courant.getY() - 1));
+        if (current.getY() >= 1 && game.getStone(current.getX(), current.getY() - 1) == color &&
+            !Coordinates(Coordinates(current.getX(), current.getY() - 1)).isInTab(toTest)
+            && !Coordinates(Coordinates(current.getX(), current.getY() - 1)).isInTab(alreadyTested)) {
+            toTest.push_back(Coordinates(current.getX(), current.getY() - 1));
         }
-        if (courant.getX() + 1 < game.getSize() && game.getStone(courant.getX() + 1, courant.getY()) == color &&
-            !Coordinates(courant.getX() + 1, courant.getY()).isInTab(aTeste)
-            && !Coordinates(courant.getX() + 1, courant.getY()).isInTab(dejaTeste)) {
-            aTeste.push_back(Coordinates(courant.getX() + 1, courant.getY()));
+        if (current.getX() + 1 < game.getSize() && game.getStone(current.getX() + 1, current.getY()) == color &&
+            !Coordinates(current.getX() + 1, current.getY()).isInTab(toTest)
+            && !Coordinates(current.getX() + 1, current.getY()).isInTab(alreadyTested)) {
+            toTest.push_back(Coordinates(current.getX() + 1, current.getY()));
         }
-        if (courant.getY() + 1 < game.getSize() && game.getStone(courant.getX(), courant.getY() + 1) == color &&
-            !Coordinates(courant.getX(), courant.getY() + 1).isInTab(aTeste)
-            && !Coordinates(courant.getX(), courant.getY() + 1).isInTab(dejaTeste)) {
-            aTeste.push_back(Coordinates(courant.getX(), courant.getY() + 1));
+        if (current.getY() + 1 < game.getSize() && game.getStone(current.getX(), current.getY() + 1) == color &&
+            !Coordinates(current.getX(), current.getY() + 1).isInTab(toTest)
+            && !Coordinates(current.getX(), current.getY() + 1).isInTab(alreadyTested)) {
+            toTest.push_back(Coordinates(current.getX(), current.getY() + 1));
         }
 
 
-        // Si on trouve une case vide, on quitte
-        if (connexeVide(courant.getX(), courant.getY()))
+        if (connexeVide(current.getX(), current.getY()))
             return 0;
 
+        alreadyTested.push_back(Coordinates(current.getX(), current.getY()));
+    } while (!toTest.empty());
 
 
-        // On rentre la coord courante dans DEJA TEST�
-        dejaTeste.push_back(Coordinates(courant.getX(), courant.getY()));
-    } while (!aTeste.empty());
-
-
-
-    // On supprrime les pions et on retourne le nombre de pions supprim�s
-    unsigned int nbPionSup = dejaTeste.size();
-    for (vector<Coordinates>::const_iterator it = dejaTeste.begin(); it != dejaTeste.end(); ++it)
+    unsigned int nbPionsToRemove = alreadyTested.size();
+    for (vector<Coordinates>::const_iterator it = alreadyTested.begin(); it != alreadyTested.end(); ++it)
         game.editStone(it->getX(), it->getY(), EMPTY);
-    return nbPionSup;
+    return nbPionsToRemove;
 }
 
 unsigned int Go::checkChain(unsigned int x, unsigned y, char turn) {
@@ -209,3 +201,22 @@ void Go::newMoveList() {
 string Go::getMove(unsigned int i) const {
     return movesList[i];
 }
+
+//boost::asio::io_service io_service;
+//
+//tcp::socket s(io_service);
+//tcp::resolver resolver(io_service);
+//boost::asio::connect(s, resolver.resolve({argv[1], argv[2]}));
+//
+//std::cout << "Enter message: ";
+//char request[max_length];
+//std::cin.getline(request, max_length);
+//size_t request_length = std::strlen(request);
+//boost::asio::write(s, boost::asio::buffer(request, request_length));
+//
+//char reply[max_length];
+//size_t reply_length = boost::asio::read(s,
+//                                        boost::asio::buffer(reply, request_length));
+//std::cout << "Reply is: ";
+//std::cout.write(reply, reply_length);
+//std::cout << "\n";
